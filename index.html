@@ -207,7 +207,7 @@
 </div>
 </div>
 <div id="step-4">
-<button class="w-full bg-primary text-white py-4 px-8 rounded-full font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105 flex items-center justify-center" onclick="showConfirmation()">
+<button class="w-full bg-primary text-white py-4 px-8 rounded-full font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105 flex items-center justify-center" onclick="showConfirmation(event)">
 <span class="material-icons mr-2">event_available</span> Confirmar la cita
                   </button>
 </div>
@@ -454,7 +454,10 @@
     }
 
     // Validation and confirmation function
-    async function showConfirmation() {
+    async function showConfirmation(event) {
+      // Prevent default if called from button
+      if (event) event.preventDefault();
+
       // Get form inputs
       const fullName = document.getElementById('full-name').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -508,10 +511,12 @@
 
       console.log('Final booking data:', bookingState);
 
+      // Get button reference
+      const confirmBtn = event?.target || document.querySelector('button[onclick*="showConfirmation"]');
+
       // Submit booking to Smart Agenda API
       try {
         // Show loading state
-        const confirmBtn = event.target;
         const originalText = confirmBtn.innerHTML;
         confirmBtn.disabled = true;
         confirmBtn.innerHTML = '<span class="material-icons animate-spin mr-2">sync</span> Procesando...';
@@ -536,9 +541,9 @@
         alert('Error al crear la reserva: ' + error.message + '\n\nPor favor, inténtelo de nuevo o contáctenos directamente.');
 
         // Restore button
-        if (event.target) {
-          event.target.disabled = false;
-          event.target.innerHTML = '<span class="material-icons mr-2">event_available</span> Confirmar la cita';
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = '<span class="material-icons mr-2">event_available</span> Confirmar la cita';
         }
       }
     }
@@ -734,18 +739,40 @@
         const startDateTime = formatDateTimeForAPI(bookingState.selectedDate, bookingState.selectedTime);
         const endTime = bookingState.selectedTime.split(':');
         const endHour = parseInt(endTime[0]);
-        const endMin = parseInt(endTime[1]) + 30;
+        let endMin = parseInt(endTime[1]) + 30;
+        let finalEndHour = endHour;
+
+        // Handle minute overflow
+        if (endMin >= 60) {
+          finalEndHour = endHour + 1;
+          endMin = endMin - 60;
+        }
+
         const endDateTime = formatDateTimeForAPI(
           bookingState.selectedDate,
-          `${endHour}:${endMin < 60 ? endMin : '00'}`
+          `${String(finalEndHour).padStart(2, '0')}:${String(endMin).padStart(2, '0')}`
         );
+
+        // Use appointment type from loaded types, or default to ID 1 (standard session)
+        let typeId = bookingState.selectedAppointmentType;
+
+        // If no appointment type loaded, use a sensible default based on center
+        if (!typeId && bookingState.appointmentTypes && bookingState.appointmentTypes.length > 0) {
+          typeId = bookingState.appointmentTypes[0].id;
+        }
+
+        // Final fallback - use "1" which is typically a standard appointment
+        if (!typeId) {
+          typeId = '1';
+          console.warn('No appointment type selected, using default typeId: 1');
+        }
 
         const bookingData = {
           fullName: bookingState.fullName,
           email: bookingState.email,
           phone: bookingState.phone,
           centerId: bookingState.selectedCenter,
-          typeId: bookingState.selectedAppointmentType || '26', // Default to first type
+          typeId: typeId,
           startTime: startDateTime,
           endTime: endDateTime
         };
@@ -762,7 +789,7 @@
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Booking failed');
+          throw new Error(errorData.message || errorData.error || 'Booking failed');
         }
 
         const result = await response.json();
