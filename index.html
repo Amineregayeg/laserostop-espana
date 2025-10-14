@@ -789,15 +789,16 @@
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || errorData.error || 'Booking failed');
+          console.error('Backend error response:', errorData);
+          throw new Error(errorData.details || errorData.message || errorData.error || 'Booking failed');
         }
 
         const result = await response.json();
-        console.log('Booking successful:', result);
+        console.log('✅ Booking successful:', result);
 
         return result;
       } catch (error) {
-        console.error('Error submitting booking:', error);
+        console.error('❌ Error submitting booking:', error);
         throw error;
       }
     }

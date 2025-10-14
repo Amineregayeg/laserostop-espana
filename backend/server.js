@@ -257,6 +257,8 @@ app.post('/api/booking', async (req, res) => {
   try {
     const { fullName, email, phone, centerId, typeId, startTime, endTime } = req.body;
 
+    console.log('📋 Received booking request:', { fullName, email, phone, centerId, typeId, startTime, endTime });
+
     // Validate required fields
     if (!fullName || !email || !phone || !centerId || !typeId || !startTime || !endTime) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -268,44 +270,56 @@ app.post('/api/booking', async (req, res) => {
     const firstName = nameParts.slice(0, -1).join(' ') || lastName;
 
     // Step 1: Check if client exists
+    console.log('🔍 Checking for existing client with email:', email);
     const clients = await smartAgendaRequest('/pdo_client');
     let client = clients.find(c => c.mail === email);
 
     // Step 2: Create client if doesn't exist
     if (!client) {
-      console.log('Creating new client...');
+      console.log('👤 Creating new client...');
+      const clientData = {
+        nom: lastName,
+        prenom: firstName,
+        mail: email,
+        telephone: phone,
+        id_groupe: centerId
+      };
+      console.log('Client data:', clientData);
+
       client = await smartAgendaRequest('/pdo_client', {
         method: 'POST',
-        body: JSON.stringify({
-          nom: lastName,
-          prenom: firstName,
-          mail: email,
-          telephone: phone,
-          id_groupe: centerId
-        })
+        body: JSON.stringify(clientData)
       });
+      console.log('✅ Client created:', client.id);
     } else {
-      console.log('Existing client found:', client.id);
+      console.log('✅ Existing client found:', client.id);
     }
 
     // Step 3: Get resource
+    console.log('🔍 Fetching resources...');
     const resources = await smartAgendaRequest('/pdo_ressource');
     const resourceId = resources.find(r => r.id === '-1')?.id || resources[0]?.id || '-1';
+    console.log('📌 Using resource ID:', resourceId);
 
     // Step 4: Create appointment
-    console.log('Creating appointment...');
+    console.log('📅 Creating appointment...');
+    const appointmentData = {
+      id_client: client.id,
+      id_type_rdv: typeId,
+      id_ressource: resourceId,
+      date_debut: startTime,
+      date_fin: endTime,
+      id_groupe: centerId,
+      statut: 'C' // Confirmed
+    };
+    console.log('Appointment data:', appointmentData);
+
     const appointment = await smartAgendaRequest('/pdo_events', {
       method: 'POST',
-      body: JSON.stringify({
-        id_client: client.id,
-        id_type_rdv: typeId,
-        id_ressource: resourceId,
-        date_debut: startTime,
-        date_fin: endTime,
-        id_groupe: centerId,
-        statut: 'C' // Confirmed
-      })
+      body: JSON.stringify(appointmentData)
     });
+
+    console.log('✅ Appointment created successfully:', appointment.id);
 
     res.json({
       success: true,
@@ -315,8 +329,13 @@ app.post('/api/booking', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error creating booking:', error);
-    res.status(500).json({ error: 'Failed to create booking', message: error.message });
+    console.error('❌ Error creating booking:', error.message);
+    console.error('Full error:', error);
+    res.status(500).json({
+      error: 'Failed to create booking',
+      message: error.message,
+      details: error.toString()
+    });
   }
 });
 
