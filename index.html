@@ -640,8 +640,14 @@
 
         console.log('Loaded', types.length, 'appointment types');
 
-        // For now, auto-select the first type (single session)
-        // TODO: Add UI to let user select appointment type
+        // Warn if no appointment types available
+        if (types.length === 0) {
+          console.warn('⚠️ No appointment types available for this center');
+          const centerName = bookingState.smartAgendaCenters.find(c => c.id === centerId)?.name;
+          alert(`⚠️ Atención:\n\nEl centro "${centerName}" no tiene citas disponibles a través de este formulario.\n\nPor favor:\n- Seleccione otro centro\n- O use el enlace de reserva directo del centro haciendo clic en la tarjeta del centro en el mapa.`);
+        }
+
+        // Auto-select the first type if available
         if (types.length > 0) {
           bookingState.selectedAppointmentType = types[0].id;
         }
@@ -753,18 +759,18 @@
           `${String(finalEndHour).padStart(2, '0')}:${String(endMin).padStart(2, '0')}`
         );
 
-        // Use appointment type from loaded types, or default to ID 1 (standard session)
+        // Use appointment type from loaded types
         let typeId = bookingState.selectedAppointmentType;
 
-        // If no appointment type loaded, use a sensible default based on center
+        // If no appointment type is selected, try to use the first available one
         if (!typeId && bookingState.appointmentTypes && bookingState.appointmentTypes.length > 0) {
           typeId = bookingState.appointmentTypes[0].id;
+          console.log('Auto-selected first appointment type:', typeId);
         }
 
-        // Final fallback - use "1" which is typically a standard appointment
+        // If still no appointment type, this center doesn't have any configured
         if (!typeId) {
-          typeId = '1';
-          console.warn('No appointment type selected, using default typeId: 1');
+          throw new Error('Este centro no tiene tipos de cita configurados. Por favor, seleccione otro centro o use el enlace de reserva directo del centro.');
         }
 
         const bookingData = {
