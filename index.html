@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LaserOstop España - Reserve su cita</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    .material-icons {
+      vertical-align: middle;
+    }
+
+    /* Map container */
+    #spain-map-container {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    #spain-map {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Custom marker styles */
+    .custom-marker {
+      background-color: #22A9AF;
+      width: 30px;
+      height: 30px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 3px solid white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .custom-marker::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Leaflet popup customization */
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .leaflet-popup-content {
+      margin: 16px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .leaflet-popup-content h3 {
+      color: #22A9AF;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#22A9AF",
+            "background-light": "#FFFFFF",
+            "background-dark": "#121212",
+            "text-light": "#374151",
+            "text-dark": "#E5E7EB",
+            "border-light": "#E5E7EB",
+            "border-dark": "#374151",
+          },
+          fontFamily: {
+            display: ["Poppins", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0.5rem",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="min-h-screen flex flex-col">
+
+<!-- Logo Header -->
+<header class="bg-white dark:bg-gray-900 shadow-sm">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="flex justify-center">
+<img src="assets/logolaserostop-bleu.svg" alt="LaserOstop España" class="h-16 sm:h-20 w-auto"/>
+</div>
+</div>
+</header>
+
+<main class="flex-grow">
+<section class="relative py-20 sm:py-32 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1531545514256-b1400bc00f31?ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;auto=format&amp;fit=crop&amp;w=1974&amp;q=80');">
+<div class="absolute inset-0 bg-white dark:bg-black opacity-50"></div>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
+<h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-800 dark:text-white leading-tight">Reserve su cita hoy mismo <br class="hidden sm:block"/> para dejar de fumar suavemente</h1>
+<p class="mt-6 text-lg sm:text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto">Únase a miles de personas que han recuperado su libertad gracias a nuestro método innovador.</p>
+</div>
+</section>
+
+<section class="bg-gray-50 dark:bg-gray-800 py-6">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-center">
+<div class="flex items-center text-primary">
+<span class="material-icons mr-2">check_circle</span>
+<span class="font-medium text-text-light dark:text-text-dark">Indoloro y sin peligro</span>
+</div>
+<div class="flex items-center text-primary">
+<span class="material-icons mr-2">check_circle</span>
+<span class="font-medium text-text-light dark:text-text-dark">Sin aumento de peso</span>
+</div>
+<div class="flex items-center text-primary">
+<span class="material-icons mr-2">check_circle</span>
+<span class="font-medium text-text-light dark:text-text-dark">Sin efectos secundarios</span>
+</div>
+</div>
+</div>
+</section>
+
+<section class="py-16 sm:py-24" id="booking">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-4xl mx-auto bg-background-light dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+<div class="p-8 sm:p-12">
+<div id="booking-form">
+<div class="mb-8" id="step-1">
+<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">1.</span>Elija su centro</h2>
+<div class="relative">
+<span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">place</span>
+<select id="center-select" class="w-full pl-12 pr-4 py-3 border border-border-light dark:border-border-dark rounded-full bg-transparent focus:ring-primary focus:border-primary transition">
+<option value="">Seleccione un centro...</option>
+<option value="alicante">LaserOstop Alicante</option>
+<option value="barcelona-gracia">LaserOstop Barcelona Gràcia</option>
+<option value="barcelona-sants">LaserOstop Barcelona Sants</option>
+<option value="madrid-atocha">LaserOstop Madrid Atocha</option>
+<option value="madrid-chamartin">LaserOstop Madrid Chamartín</option>
+<option value="majadahonda">LaserOstop Majadahonda</option>
+<option value="san-sebastian">LaserOstop San Sebastián de los Reyes</option>
+<option value="terrassa">LaserOstop Terrassa</option>
+<option value="torrejon">LaserOstop Torrejón de Ardoz</option>
+<option value="valencia">LaserOstop Valencia</option>
+<option value="sevilla">LaserOstop Sevilla</option>
+</select>
+</div>
+</div>
+<div class="mb-8" id="step-2">
+<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">2.</span>Elija una fecha y una hora</h2>
+<div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
+<div class="flex justify-between items-center mb-4">
+<button id="prev-month" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"><span class="material-icons">chevron_left</span></button>
+<h3 id="current-month" class="text-lg font-semibold"></h3>
+<button id="next-month" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"><span class="material-icons">chevron_right</span></button>
+</div>
+<div class="grid grid-cols-7 gap-2 text-center mb-2">
+<div class="text-gray-500 text-sm font-medium">Lu</div>
+<div class="text-gray-500 text-sm font-medium">Ma</div>
+<div class="text-gray-500 text-sm font-medium">Mi</div>
+<div class="text-gray-500 text-sm font-medium">Ju</div>
+<div class="text-gray-500 text-sm font-medium">Vi</div>
+<div class="text-gray-500 text-sm font-medium">Sa</div>
+<div class="text-gray-500 text-sm font-medium">Do</div>
+</div>
+<div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center">
+<!-- Calendar days will be generated here -->
+</div>
+<div class="mt-6" id="time-slots-section">
+<h4 class="font-semibold mb-3 text-text-light dark:text-text-dark">Horarios disponibles</h4>
+<div id="selected-date-info" class="text-sm text-gray-600 dark:text-gray-400 mb-3"></div>
+<div id="time-slots" class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+<!-- Time slots will be generated here -->
+</div>
+</div>
+</div>
+</div>
+<div class="mb-8" id="step-3">
+<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">3.</span>Sus datos</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="relative">
+<span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">person</span>
+<input id="full-name" class="w-full pl-12 pr-4 py-3 border border-border-light dark:border-border-dark rounded-full bg-transparent focus:ring-primary focus:border-primary transition" placeholder="Nombre completo *" type="text" required/>
+</div>
+<div class="relative">
+<span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">email</span>
+<input id="email" class="w-full pl-12 pr-4 py-3 border border-border-light dark:border-border-dark rounded-full bg-transparent focus:ring-primary focus:border-primary transition" placeholder="Correo electrónico *" type="email" required/>
+</div>
+<div class="relative md:col-span-2">
+<span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">phone</span>
+<input id="phone" class="w-full pl-12 pr-4 py-3 border border-border-light dark:border-border-dark rounded-full bg-transparent focus:ring-primary focus:border-primary transition" placeholder="Número de teléfono *" type="tel" required/>
+</div>
+</div>
+</div>
+<div id="step-4">
+<button class="w-full bg-primary text-white py-4 px-8 rounded-full font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105 flex items-center justify-center" onclick="showConfirmation()">
+<span class="material-icons mr-2">event_available</span> Confirmar la cita
+                  </button>
+</div>
+</div>
+<div class="hidden text-center py-12" id="confirmation-message">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-icons text-4xl text-green-500">check</span>
+</div>
+<h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">¡Cita confirmada!</h2>
+<p class="text-lg text-gray-600 dark:text-gray-300 mb-2">Se ha enviado un correo de confirmación a su dirección.</p>
+<p class="text-gray-500 dark:text-gray-400">Estaremos encantados de recibirle en el centro <strong>LaserOstop Valencia</strong> el <strong>15 de Octubre de 2025 a las 11:30</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="bg-gray-50 dark:bg-gray-900/50 py-16 sm:py-24">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<h2 class="text-3xl font-bold text-center mb-10 text-text-light dark:text-text-dark">Nuestros centros cerca de usted</h2>
+<div id="spain-map-container" class="rounded-lg overflow-hidden shadow-xl">
+<div id="spain-map"></div>
+</div>
+
+<!-- Center list below map -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('alicante')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Alicante</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Calle Teniente Llorca 4, Bajo</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 10:00 - 19:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('barcelona-gracia')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Barcelona Gràcia</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Carrer de Milton, 2, Gràcia</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 08:00 - 20:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('barcelona-sants')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Barcelona Sants</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Carrer de Galileu, 65, Sants-Montjuïc</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 08:00 - 18:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('madrid-atocha')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Madrid Atocha</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Calle Canarias 26, Atocha</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 10:00 - 19:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('madrid-chamartin')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Madrid Chamartín</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Calle de Oruro, 9, Chamartín</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 09:00 - 16:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('majadahonda')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Majadahonda</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Calle del Dr Calero, 19</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 09:00 - 16:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('san-sebastian')">
+  <h3 class="font-bold text-lg mb-2 text-primary">San Sebastián de los Reyes</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Avenida de Murcia, 5</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 09:00 - 16:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('terrassa')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Terrassa</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Calle Jaume Cantarer, 3, Local B</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 08:00 - 20:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('torrejon')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Torrejón de Ardoz</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Calle pesquera, 10</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 09:00 - 16:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('valencia')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Valencia</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Calle San Vicente Mártir 85 planta 7</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 09:00 - 18:00</p>
+</div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" onclick="selectCenter('sevilla')">
+  <h3 class="font-bold text-lg mb-2 text-primary">Sevilla</h3>
+  <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Avenida Edouardo Dato 85</p>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><span class="material-icons text-xs">schedule</span> 09:00 - 19:00</p>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    // Centers data with real GPS coordinates
+    const centers = {
+      'alicante': {
+        lat: 38.3452, lng: -0.4810,
+        name: 'LaserOstop Alicante',
+        address: 'Calle Teniente Llorca 4, Bajo, 03001, Alicante',
+        hours: '10:00 - 19:00',
+        phone: '+34 613 255 948'
+      },
+      'barcelona-gracia': {
+        lat: 41.4036, lng: 2.1570,
+        name: 'LaserOstop Barcelona Gràcia',
+        address: 'Carrer de Milton, 2, Gràcia, 08012, Barcelona',
+        hours: '08:00 - 20:00',
+        phone: '+34 605 592 509'
+      },
+      'barcelona-sants': {
+        lat: 41.3784, lng: 2.1366,
+        name: 'LaserOstop Barcelona Sants',
+        address: 'Carrer de Galileu, 65, Sants-Montjuïc, 08028, Barcelona',
+        hours: '08:00 - 18:00',
+        phone: '+34 689 560 130'
+      },
+      'madrid-atocha': {
+        lat: 40.3940, lng: -3.6835,
+        name: 'LaserOstop Madrid Atocha',
+        address: 'Calle Canarias 26, Atocha, 28045, Madrid',
+        hours: '10:00 - 19:00',
+        phone: '+34 613 255 948'
+      },
+      'madrid-chamartin': {
+        lat: 40.4640, lng: -3.6783,
+        name: 'LaserOstop Madrid Chamartín',
+        address: 'Calle de Oruro, 9, Chamartín, 28016, Madrid',
+        hours: '09:00 - 16:00',
+        phone: '+34 919 305 313'
+      },
+      'majadahonda': {
+        lat: 40.4732, lng: -3.8714,
+        name: 'LaserOstop Majadahonda',
+        address: 'Calle del Dr Calero, 19, Centro comercial Tutti, 28220, Majadahonda',
+        hours: '09:00 - 16:00',
+        phone: '+34 919 305 313'
+      },
+      'san-sebastian': {
+        lat: 40.5485, lng: -3.6295,
+        name: 'LaserOstop San Sebastián de los Reyes',
+        address: 'Avenida de Murcia, 5, 28702, San Sebastián de los Reyes',
+        hours: '09:00 - 16:00',
+        phone: '+34 919 305 313'
+      },
+      'terrassa': {
+        lat: 41.5633, lng: 2.0096,
+        name: 'LaserOstop Terrassa',
+        address: 'Calle Jaume Cantarer, 3, Local B, 08221, Terrassa',
+        hours: '08:00 - 20:00',
+        phone: '+34 605 592 509'
+      },
+      'torrejon': {
+        lat: 40.4578, lng: -3.4763,
+        name: 'LaserOstop Torrejón de Ardoz',
+        address: 'Calle pesquera, 10, 28850, Torrejón de Ardoz',
+        hours: '09:00 - 16:00',
+        phone: '+34 919 305 313'
+      },
+      'valencia': {
+        lat: 39.4699, lng: -0.3763,
+        name: 'LaserOstop Valencia',
+        address: 'Calle San Vicente Mártir 85 planta 7, 46007, Valencia',
+        hours: '09:00 - 18:00',
+        phone: '+34 689 560 130'
+      },
+      'sevilla': {
+        lat: 37.3891, lng: -5.9845,
+        name: 'LaserOstop Sevilla',
+        address: 'Avenida Edouardo Dato 85, 41005, Sevilla',
+        hours: '09:00 - 19:00',
+        phone: '+34 689 560 130'
+      }
+    };
+
+    let map;
+
+    // Initialize Leaflet map
+    function initializeMap() {
+      // Create map centered on Spain
+      map = L.map('spain-map').setView([40.4168, -3.7038], 6);
+
+      // Add OpenStreetMap tiles (free, no API key needed)
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+        minZoom: 5
+      }).addTo(map);
+
+      // Custom marker icon
+      const customIcon = L.divIcon({
+        className: 'custom-marker',
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -30]
+      });
+
+      // Add markers for each center
+      Object.keys(centers).forEach(centerId => {
+        const center = centers[centerId];
+
+        const marker = L.marker([center.lat, center.lng], { icon: customIcon })
+          .addTo(map);
+
+        // Create popup content
+        const popupContent = `
+          <div style="min-width: 200px;">
+            <h3 style="font-size: 16px; margin-bottom: 8px;">${center.name}</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 4px;">
+              <span style="display: inline-block; width: 18px;">📍</span> ${center.address}
+            </p>
+            <p style="font-size: 13px; color: #666; margin-bottom: 4px;">
+              <span style="display: inline-block; width: 18px;">⏰</span> ${center.hours}
+            </p>
+            <p style="font-size: 13px; color: #666; margin-bottom: 8px;">
+              <span style="display: inline-block; width: 18px;">📞</span> ${center.phone}
+            </p>
+            <button onclick="selectCenter('${centerId}')"
+                    style="background: #22A9AF; color: white; padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 500; width: 100%;">
+              Seleccionar este centro
+            </button>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent);
+
+        // Open popup on marker click
+        marker.on('click', function() {
+          map.setView([center.lat, center.lng], 12);
+        });
+      });
+    }
+
+    // Select center function
+    function selectCenter(centerId) {
+      const select = document.getElementById('center-select');
+      select.value = centerId;
+      select.dispatchEvent(new Event('change'));
+
+      // Close any open popups
+      map.closePopup();
+
+      // Scroll to booking form
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Validation and confirmation function
+    async function showConfirmation() {
+      // Get form inputs
+      const fullName = document.getElementById('full-name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      // Validation errors array
+      const errors = [];
+
+      // Validate center selection
+      if (!bookingState.selectedCenter) {
+        errors.push('Por favor, seleccione un centro');
+      }
+
+      // Validate date selection
+      if (!bookingState.selectedDate) {
+        errors.push('Por favor, seleccione una fecha');
+      }
+
+      // Validate time selection
+      if (!bookingState.selectedTime) {
+        errors.push('Por favor, seleccione una hora');
+      }
+
+      // Validate full name
+      if (!fullName || fullName.length < 3) {
+        errors.push('Por favor, ingrese su nombre completo');
+      }
+
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        errors.push('Por favor, ingrese un correo electrónico válido');
+      }
+
+      // Validate phone
+      const phoneRegex = /^[+]?[\d\s()-]{9,}$/;
+      if (!phone || !phoneRegex.test(phone)) {
+        errors.push('Por favor, ingrese un número de teléfono válido');
+      }
+
+      // Show errors or proceed
+      if (errors.length > 0) {
+        alert('Por favor, complete todos los campos requeridos:\n\n' + errors.join('\n'));
+        return;
+      }
+
+      // Store user data in booking state
+      bookingState.fullName = fullName;
+      bookingState.email = email;
+      bookingState.phone = phone;
+
+      console.log('Final booking data:', bookingState);
+
+      // Submit booking to Smart Agenda API
+      try {
+        // Show loading state
+        const confirmBtn = event.target;
+        const originalText = confirmBtn.innerHTML;
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<span class="material-icons animate-spin mr-2">sync</span> Procesando...';
+
+        const result = await submitBooking();
+
+        console.log('Booking created successfully:', result);
+
+        // Update confirmation message with actual data
+        const centerName = bookingState.smartAgendaCenters.find(c => c.id === bookingState.selectedCenter)?.name || 'nuestro centro';
+        const dateStr = `${bookingState.selectedDate.getDate()} de ${monthNames[bookingState.selectedDate.getMonth()]} de ${bookingState.selectedDate.getFullYear()}`;
+
+        document.querySelector('#confirmation-message p:last-child').innerHTML =
+          `Estaremos encantados de recibirle en el centro <strong>${centerName}</strong> el <strong>${dateStr} a las ${bookingState.selectedTime}</strong>.`;
+
+        // Show confirmation
+        document.getElementById('booking-form').classList.add('hidden');
+        document.getElementById('confirmation-message').classList.remove('hidden');
+
+      } catch (error) {
+        console.error('Booking error:', error);
+        alert('Error al crear la reserva: ' + error.message + '\n\nPor favor, inténtelo de nuevo o contáctenos directamente.');
+
+        // Restore button
+        if (event.target) {
+          event.target.disabled = false;
+          event.target.innerHTML = '<span class="material-icons mr-2">event_available</span> Confirmar la cita';
+        }
+      }
+    }
+
+    // ========== CALENDAR AND BOOKING LOGIC ==========
+
+    // API Configuration - automatically detects environment
+    const API_BASE_URL = window.location.hostname === 'localhost'
+      ? 'http://localhost:3000/api'
+      : 'https://laserostop-backend.onrender.com/api'; // Update this after backend deployment
+
+    // Booking state
+    let bookingState = {
+      selectedCenter: null,
+      selectedDate: null,
+      selectedTime: null,
+      currentMonth: new Date(),
+      availableSlots: {}, // Will be populated from Smart Agenda API
+      smartAgendaCenters: [], // Centers from Smart Agenda
+      appointmentTypes: [] // Appointment types for selected center
+    };
+
+    // Month names in Spanish
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    // Day names in Spanish
+    const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    // ========== API FUNCTIONS ==========
+
+    /**
+     * Load centers from Smart Agenda API
+     */
+    async function loadCentersFromAPI() {
+      try {
+        console.log('Loading centers from Smart Agenda...');
+        const response = await fetch(`${API_BASE_URL}/centers`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const centers = await response.json();
+        bookingState.smartAgendaCenters = centers;
+
+        console.log('Loaded', centers.length, 'centers from Smart Agenda');
+
+        // Populate the center dropdown
+        populateCenterDropdown(centers);
+
+        return centers;
+      } catch (error) {
+        console.error('Error loading centers:', error);
+        alert('Error al cargar los centros. Por favor, recargue la página.');
+        return [];
+      }
+    }
+
+    /**
+     * Populate center dropdown with API data
+     */
+    function populateCenterDropdown(centers) {
+      const select = document.getElementById('center-select');
+
+      // Clear existing options except the first one
+      select.innerHTML = '<option value="">Seleccione un centro...</option>';
+
+      // Add centers from API
+      centers.forEach(center => {
+        const option = document.createElement('option');
+        option.value = center.id;
+        option.textContent = center.name;
+        select.appendChild(option);
+      });
+    }
+
+    /**
+     * Load appointment types for selected center
+     */
+    async function loadAppointmentTypes(centerId) {
+      try {
+        console.log('Loading appointment types for center:', centerId);
+        const response = await fetch(`${API_BASE_URL}/appointment-types?centerId=${centerId}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const types = await response.json();
+        bookingState.appointmentTypes = types;
+
+        console.log('Loaded', types.length, 'appointment types');
+
+        // For now, auto-select the first type (single session)
+        // TODO: Add UI to let user select appointment type
+        if (types.length > 0) {
+          bookingState.selectedAppointmentType = types[0].id;
+        }
+
+        return types;
+      } catch (error) {
+        console.error('Error loading appointment types:', error);
+        return [];
+      }
+    }
+
+    /**
+     * Load availability for selected date range
+     */
+    async function loadAvailability(startDate, endDate) {
+      if (!bookingState.selectedCenter || !bookingState.selectedAppointmentType) {
+        console.log('Center or appointment type not selected');
+        return {};
+      }
+
+      try {
+        console.log('Loading availability from', startDate, 'to', endDate);
+
+        const params = new URLSearchParams({
+          centerId: bookingState.selectedCenter,
+          typeId: bookingState.selectedAppointmentType,
+          startDate: formatDateForAPI(startDate),
+          endDate: formatDateForAPI(endDate)
+        });
+
+        const response = await fetch(`${API_BASE_URL}/availability?${params.toString()}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const availability = await response.json();
+        console.log('Availability data:', availability);
+
+        // Process availability data into our format
+        bookingState.availableSlots = processAvailabilityData(availability);
+
+        return bookingState.availableSlots;
+      } catch (error) {
+        console.error('Error loading availability:', error);
+        return {};
+      }
+    }
+
+    /**
+     * Process availability data from API into time slots format
+     */
+    function processAvailabilityData(apiData) {
+      // TODO: Parse Smart Agenda availability format
+      // For now, return sample data structure
+      // This will be updated once we test the actual API response format
+
+      const slots = {};
+
+      // Example: if apiData has array of available times
+      // apiData.forEach(slot => {
+      //   const dateKey = slot.date;
+      //   if (!slots[dateKey]) slots[dateKey] = {};
+      //   slots[dateKey][slot.time] = true;
+      // });
+
+      return slots;
+    }
+
+    /**
+     * Format date for API (YYYY-MM-DD)
+     */
+    function formatDateForAPI(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    /**
+     * Format datetime for API (YYYY-MM-DD HH:MM:SS)
+     */
+    function formatDateTimeForAPI(date, time) {
+      return `${formatDateForAPI(date)} ${time}:00`;
+    }
+
+    /**
+     * Submit booking to Smart Agenda
+     */
+    async function submitBooking() {
+      try {
+        console.log('Submitting booking to Smart Agenda...');
+
+        // Calculate end time (assuming 30 min appointment)
+        const startDateTime = formatDateTimeForAPI(bookingState.selectedDate, bookingState.selectedTime);
+        const endTime = bookingState.selectedTime.split(':');
+        const endHour = parseInt(endTime[0]);
+        const endMin = parseInt(endTime[1]) + 30;
+        const endDateTime = formatDateTimeForAPI(
+          bookingState.selectedDate,
+          `${endHour}:${endMin < 60 ? endMin : '00'}`
+        );
+
+        const bookingData = {
+          fullName: bookingState.fullName,
+          email: bookingState.email,
+          phone: bookingState.phone,
+          centerId: bookingState.selectedCenter,
+          typeId: bookingState.selectedAppointmentType || '26', // Default to first type
+          startTime: startDateTime,
+          endTime: endDateTime
+        };
+
+        console.log('Booking data:', bookingData);
+
+        const response = await fetch(`${API_BASE_URL}/booking`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(bookingData)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Booking failed');
+        }
+
+        const result = await response.json();
+        console.log('Booking successful:', result);
+
+        return result;
+      } catch (error) {
+        console.error('Error submitting booking:', error);
+        throw error;
+      }
+    }
+
+    // Sample time slots (fallback for when API doesn't return data)
+    const sampleTimeSlots = {
+      '09:00': true,
+      '09:30': true,
+      '10:00': true,
+      '10:30': false, // unavailable
+      '11:00': true,
+      '11:30': true,
+      '12:00': false, // unavailable
+      '14:00': true,
+      '14:30': true,
+      '15:00': true,
+      '15:30': true,
+      '16:00': true,
+      '16:30': false, // unavailable
+      '17:00': true,
+      '17:30': true,
+      '18:00': true
+    };
+
+    // Generate calendar for current month
+    function generateCalendar() {
+      const year = bookingState.currentMonth.getFullYear();
+      const month = bookingState.currentMonth.getMonth();
+
+      // Update month display
+      document.getElementById('current-month').textContent =
+        `${monthNames[month]} ${year}`;
+
+      // Get first day of month and number of days
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+
+      // Get day of week for first day (0 = Sunday, adjust to Monday = 0)
+      let startDay = firstDay.getDay() - 1;
+      if (startDay === -1) startDay = 6; // Sunday becomes 6
+
+      // Get today's date for comparison
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const calendarGrid = document.getElementById('calendar-grid');
+      calendarGrid.innerHTML = '';
+
+      // Add empty cells for days before month starts
+      for (let i = 0; i < startDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'text-gray-400 text-sm';
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      // Add days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dayCell = document.createElement('div');
+
+        const isPast = date < today;
+        const isSelected = bookingState.selectedDate &&
+          date.toDateString() === bookingState.selectedDate.toDateString();
+        const isToday = date.toDateString() === today.toDateString();
+
+        // Base classes
+        let classes = 'text-sm py-2 rounded-full transition-all';
+
+        if (isPast) {
+          // Past dates - disabled
+          classes += ' text-gray-400 cursor-not-allowed';
+        } else if (isSelected) {
+          // Selected date
+          classes += ' bg-primary text-white cursor-pointer font-semibold transform scale-110';
+        } else if (isToday) {
+          // Today
+          classes += ' bg-primary/20 border-2 border-primary text-primary cursor-pointer font-semibold hover:bg-primary/30';
+        } else {
+          // Future dates - selectable
+          classes += ' hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer';
+        }
+
+        dayCell.className = classes;
+        dayCell.textContent = day;
+
+        // Add click handler for future dates
+        if (!isPast) {
+          dayCell.onclick = () => selectDate(date);
+        }
+
+        calendarGrid.appendChild(dayCell);
+      }
+    }
+
+    // Select a date
+    function selectDate(date) {
+      bookingState.selectedDate = date;
+      bookingState.selectedTime = null; // Reset time selection
+
+      generateCalendar(); // Refresh calendar to show selection
+      generateTimeSlots(); // Show available time slots
+      updateStepIndicators(); // Update visual indicators
+    }
+
+    // Generate time slots for selected date
+    function generateTimeSlots() {
+      const timeSlotsContainer = document.getElementById('time-slots');
+      const dateInfo = document.getElementById('selected-date-info');
+
+      if (!bookingState.selectedDate) {
+        timeSlotsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 col-span-full text-center py-4">Seleccione una fecha para ver los horarios disponibles</p>';
+        dateInfo.textContent = '';
+        return;
+      }
+
+      // Show selected date
+      const dayName = dayNames[bookingState.selectedDate.getDay()];
+      const day = bookingState.selectedDate.getDate();
+      const month = monthNames[bookingState.selectedDate.getMonth()];
+      const year = bookingState.selectedDate.getFullYear();
+      dateInfo.textContent = `Horarios para ${dayName}, ${day} de ${month} de ${year}`;
+
+      // Generate time slot buttons
+      timeSlotsContainer.innerHTML = '';
+
+      Object.keys(sampleTimeSlots).forEach(time => {
+        const available = sampleTimeSlots[time];
+        const button = document.createElement('button');
+
+        const isSelected = bookingState.selectedTime === time;
+
+        if (isSelected) {
+          button.className = 'py-2 px-3 bg-primary text-white rounded-full border border-primary font-semibold';
+        } else if (available) {
+          button.className = 'py-2 px-3 border border-border-light dark:border-border-dark rounded-full hover:border-primary hover:text-primary transition';
+          button.onclick = () => selectTime(time);
+        } else {
+          button.className = 'py-2 px-3 border border-border-light dark:border-border-dark rounded-full text-gray-400 cursor-not-allowed opacity-50';
+          button.disabled = true;
+        }
+
+        button.textContent = time;
+        timeSlotsContainer.appendChild(button);
+      });
+    }
+
+    // Select a time slot
+    function selectTime(time) {
+      bookingState.selectedTime = time;
+      generateTimeSlots(); // Refresh to show selection
+      updateStepIndicators(); // Update visual indicators
+
+      console.log('Booking state:', bookingState);
+      // This will be used later for Smart Agenda API call
+    }
+
+    // Navigate to previous month
+    document.getElementById('prev-month').addEventListener('click', () => {
+      bookingState.currentMonth.setMonth(bookingState.currentMonth.getMonth() - 1);
+      generateCalendar();
+    });
+
+    // Navigate to next month
+    document.getElementById('next-month').addEventListener('click', () => {
+      bookingState.currentMonth.setMonth(bookingState.currentMonth.getMonth() + 1);
+      generateCalendar();
+    });
+
+    // Update booking state when center is selected
+    document.getElementById('center-select').addEventListener('change', async (e) => {
+      bookingState.selectedCenter = e.target.value;
+      console.log('Selected center:', bookingState.selectedCenter);
+
+      // Show visual feedback
+      updateStepIndicators();
+
+      // Reset selection
+      bookingState.selectedDate = null;
+      bookingState.selectedTime = null;
+
+      if (bookingState.selectedCenter) {
+        // Load appointment types for this center
+        await loadAppointmentTypes(bookingState.selectedCenter);
+
+        // Load availability for current month
+        const startDate = new Date(bookingState.currentMonth.getFullYear(), bookingState.currentMonth.getMonth(), 1);
+        const endDate = new Date(bookingState.currentMonth.getFullYear(), bookingState.currentMonth.getMonth() + 1, 0);
+        await loadAvailability(startDate, endDate);
+      }
+
+      generateCalendar();
+      generateTimeSlots();
+    });
+
+    // Update step completion indicators
+    function updateStepIndicators() {
+      const step1 = document.querySelector('#step-1 h2');
+      const step2 = document.querySelector('#step-2 h2');
+      const step3 = document.querySelector('#step-3 h2');
+
+      // Step 1: Center selected
+      if (bookingState.selectedCenter) {
+        if (!step1.querySelector('.material-icons.text-green-500')) {
+          step1.innerHTML = '<span class="text-primary mr-3">1.</span>Elija su centro <span class="material-icons text-green-500 align-middle ml-2">check_circle</span>';
+        }
+      } else {
+        step1.innerHTML = '<span class="text-primary mr-3">1.</span>Elija su centro';
+      }
+
+      // Step 2: Date and time selected
+      if (bookingState.selectedDate && bookingState.selectedTime) {
+        if (!step2.querySelector('.material-icons.text-green-500')) {
+          step2.innerHTML = '<span class="text-primary mr-3">2.</span>Elija una fecha y una hora <span class="material-icons text-green-500 align-middle ml-2">check_circle</span>';
+        }
+      } else {
+        step2.innerHTML = '<span class="text-primary mr-3">2.</span>Elija una fecha y una hora';
+      }
+    }
+
+    // Initialize calendar on load
+    function initializeCalendar() {
+      generateCalendar();
+      generateTimeSlots();
+    }
+
+    // Initialize everything on load
+    window.addEventListener('DOMContentLoaded', async () => {
+      console.log('LaserOstop Booking System - Initializing...');
+
+      // Initialize map
+      initializeMap();
+
+      // Initialize calendar
+      initializeCalendar();
+
+      // Load centers from Smart Agenda API
+      await loadCentersFromAPI();
+
+      console.log('Initialization complete!');
+    });
+  </script>
+
+</body>
+</html>

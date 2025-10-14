@@ -1,0 +1,29 @@
+# Backend environment variables
+backend/.env
+backend/.env.local
+backend/.env.production
+
+# Node modules
+backend/node_modules/
+
+# Logs
+backend/logs/
+backend/*.log
+backend/server.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build files
+dist/
+build/
+
+# Local Netlify folder
+.netlify/
