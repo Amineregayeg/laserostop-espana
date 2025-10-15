@@ -306,10 +306,10 @@ app.post('/api/booking', async (req, res) => {
     const appointmentData = {
       id_client: client.id,
       id_type_rdv: typeId,
-      id_ressource: resourceId,
-      date_debut: startTime,
-      date_fin: endTime,
-      id_groupe: centerId,
+      presta_id: resourceId,  // API uses presta_id not id_ressource
+      start_date: startTime,  // API uses start_date not date_debut
+      end_date: endTime,      // API uses end_date not date_fin
+      equipe_id: centerId,    // API uses equipe_id not id_groupe
       statut: 'C' // Confirmed
     };
     console.log('Appointment data:', appointmentData);
