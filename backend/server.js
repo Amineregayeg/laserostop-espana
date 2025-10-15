@@ -304,7 +304,7 @@ app.post('/api/booking', async (req, res) => {
     // Step 4: Create appointment
     console.log('📅 Creating appointment...');
     const appointmentData = {
-      id_client: client.id,
+      client_id: client.id,   // API uses client_id not id_client
       id_type_rdv: typeId,
       presta_id: resourceId,  // API uses presta_id not id_ressource
       start_date: startTime,  // API uses start_date not date_debut
