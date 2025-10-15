@@ -255,9 +255,9 @@ app.get('/api/availability', async (req, res) => {
  */
 app.post('/api/booking', async (req, res) => {
   try {
-    const { fullName, email, phone, centerId, typeId, startTime, endTime } = req.body;
+    const { fullName, email, phone, centerId, typeId, startTime, endTime, source } = req.body;
 
-    console.log('📋 Received booking request:', { fullName, email, phone, centerId, typeId, startTime, endTime });
+    console.log('📋 Received booking request:', { fullName, email, phone, centerId, typeId, startTime, endTime, source: source || 'direct' });
 
     // Validate required fields
     if (!fullName || !email || !phone || !centerId || !typeId || !startTime || !endTime) {

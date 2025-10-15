@@ -160,8 +160,43 @@
 </select>
 </div>
 </div>
-<div class="mb-8" id="step-2">
-<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">2.</span>Elija una fecha y una hora</h2>
+<div class="mb-8 hidden" id="step-1b">
+<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">2.</span>Tipo de sesión</h2>
+<div class="relative">
+<span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">healing</span>
+<select id="booking-type-select" class="w-full pl-12 pr-4 py-3 border border-border-light dark:border-border-dark rounded-full bg-transparent focus:ring-primary focus:border-primary transition">
+<option value="">Seleccione el tipo de sesión...</option>
+</select>
+</div>
+<!-- Info box for selected type -->
+<div id="booking-type-info" class="hidden mt-4 p-4 bg-primary/10 border border-primary/30 rounded-lg">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+<div class="flex items-center">
+<span class="material-icons text-primary mr-2 text-lg">schedule</span>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-xs">Duración</p>
+<p id="type-duration" class="font-semibold text-text-light dark:text-text-dark">-</p>
+</div>
+</div>
+<div class="flex items-center">
+<span class="material-icons text-primary mr-2 text-lg">euro</span>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-xs">Precio</p>
+<p id="type-price" class="font-semibold text-text-light dark:text-text-dark">-</p>
+</div>
+</div>
+<div class="flex items-center">
+<span class="material-icons text-primary mr-2 text-lg">info</span>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-xs">Descripción</p>
+<p id="type-description" class="font-semibold text-text-light dark:text-text-dark text-xs">-</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mb-8 hidden" id="step-2">
+<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">3.</span>Elija una fecha y una hora</h2>
 <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
 <div class="flex justify-between items-center mb-4">
 <button id="prev-month" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"><span class="material-icons">chevron_left</span></button>
@@ -189,8 +224,8 @@
 </div>
 </div>
 </div>
-<div class="mb-8" id="step-3">
-<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">3.</span>Sus datos</h2>
+<div class="mb-8 hidden" id="step-3">
+<h2 class="text-2xl font-semibold mb-4 text-text-light dark:text-text-dark"><span class="text-primary mr-3">4.</span>Sus datos</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="relative">
 <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">person</span>
@@ -206,7 +241,7 @@
 </div>
 </div>
 </div>
-<div id="step-4">
+<div id="step-4" class="hidden">
 <button class="w-full bg-primary text-white py-4 px-8 rounded-full font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105 flex items-center justify-center" onclick="showConfirmation(event)">
 <span class="material-icons mr-2">event_available</span> Confirmar la cita
                   </button>
@@ -469,6 +504,11 @@
       // Validate center selection
       if (!bookingState.selectedCenter) {
         errors.push('Por favor, seleccione un centro');
+      }
+
+      // Validate booking type selection
+      if (!bookingState.selectedAppointmentType) {
+        errors.push('Por favor, seleccione el tipo de sesión');
       }
 
       // Validate date selection
@@ -773,6 +813,11 @@
           throw new Error('Este centro no tiene tipos de cita configurados. Por favor, seleccione otro centro o use el enlace de reserva directo del centro.');
         }
 
+        // Detect URL source for tracking
+        const urlPath = window.location.pathname;
+        const urlSlug = urlPath.split('/').filter(p => p)[0];
+        const source = urlSlug || 'direct';
+
         const bookingData = {
           fullName: bookingState.fullName,
           email: bookingState.email,
@@ -780,7 +825,8 @@
           centerId: bookingState.selectedCenter,
           typeId: typeId,
           startTime: startDateTime,
-          endTime: endDateTime
+          endTime: endDateTime,
+          source: source // Track where booking came from
         };
 
         console.log('Booking data:', bookingData);
@@ -985,24 +1031,103 @@
       // Reset selection
       bookingState.selectedDate = null;
       bookingState.selectedTime = null;
+      bookingState.selectedAppointmentType = null;
 
       if (bookingState.selectedCenter) {
         // Load appointment types for this center
         await loadAppointmentTypes(bookingState.selectedCenter);
 
+        // Show booking type selector and populate it
+        populateBookingTypeDropdown(bookingState.appointmentTypes);
+
         // Load availability for current month
         const startDate = new Date(bookingState.currentMonth.getFullYear(), bookingState.currentMonth.getMonth(), 1);
         const endDate = new Date(bookingState.currentMonth.getFullYear(), bookingState.currentMonth.getMonth() + 1, 0);
         await loadAvailability(startDate, endDate);
+      } else {
+        // Hide booking type selector if no center selected
+        document.getElementById('step-1b').classList.add('hidden');
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-3').classList.add('hidden');
+        document.getElementById('step-4').classList.add('hidden');
       }
 
       generateCalendar();
       generateTimeSlots();
     });
 
+    // Populate booking type dropdown
+    function populateBookingTypeDropdown(types) {
+      const select = document.getElementById('booking-type-select');
+      const step1b = document.getElementById('step-1b');
+
+      // Clear existing options except the first one
+      select.innerHTML = '<option value="">Seleccione el tipo de sesión...</option>';
+
+      if (types && types.length > 0) {
+        // Add types to dropdown
+        types.forEach(type => {
+          const option = document.createElement('option');
+          option.value = type.id;
+          option.textContent = type.name;
+          option.dataset.price = type.price || '190';
+          option.dataset.duration = type.duration || '30';
+          option.dataset.description = type.description || type.name;
+          select.appendChild(option);
+        });
+
+        // Show the booking type section
+        step1b.classList.remove('hidden');
+      } else {
+        // Hide the booking type section if no types available
+        step1b.classList.add('hidden');
+      }
+    }
+
+    // Handle booking type selection
+    document.getElementById('booking-type-select').addEventListener('change', (e) => {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      bookingState.selectedAppointmentType = e.target.value;
+
+      const infoBox = document.getElementById('booking-type-info');
+      const step2 = document.getElementById('step-2');
+      const step3 = document.getElementById('step-3');
+      const step4 = document.getElementById('step-4');
+
+      if (bookingState.selectedAppointmentType) {
+        // Show type details
+        const duration = selectedOption.dataset.duration || '30';
+        const price = selectedOption.dataset.price || '190';
+        const description = selectedOption.dataset.description || '-';
+
+        document.getElementById('type-duration').textContent = `${duration} minutos`;
+        document.getElementById('type-price').textContent = `€${price}`;
+        document.getElementById('type-description').textContent = description;
+
+        infoBox.classList.remove('hidden');
+
+        // Show next steps
+        step2.classList.remove('hidden');
+        step3.classList.remove('hidden');
+        step4.classList.remove('hidden');
+
+        // Update step indicators
+        updateStepIndicators();
+
+        console.log('Selected appointment type:', bookingState.selectedAppointmentType);
+      } else {
+        // Hide type details and next steps
+        infoBox.classList.add('hidden');
+        step2.classList.add('hidden');
+        step3.classList.add('hidden');
+        step4.classList.add('hidden');
+      }
+    });
+
     // Update step completion indicators
     function updateStepIndicators() {
       const step1 = document.querySelector('#step-1 h2');
+      const step1b = document.querySelector('#step-1b h2');
       const step2 = document.querySelector('#step-2 h2');
       const step3 = document.querySelector('#step-3 h2');
 
@@ -1015,13 +1140,26 @@
         step1.innerHTML = '<span class="text-primary mr-3">1.</span>Elija su centro';
       }
 
-      // Step 2: Date and time selected
-      if (bookingState.selectedDate && bookingState.selectedTime) {
-        if (!step2.querySelector('.material-icons.text-green-500')) {
-          step2.innerHTML = '<span class="text-primary mr-3">2.</span>Elija una fecha y una hora <span class="material-icons text-green-500 align-middle ml-2">check_circle</span>';
+      // Step 1b (2): Booking type selected
+      if (step1b) {
+        if (bookingState.selectedAppointmentType) {
+          if (!step1b.querySelector('.material-icons.text-green-500')) {
+            step1b.innerHTML = '<span class="text-primary mr-3">2.</span>Tipo de sesión <span class="material-icons text-green-500 align-middle ml-2">check_circle</span>';
+          }
+        } else {
+          step1b.innerHTML = '<span class="text-primary mr-3">2.</span>Tipo de sesión';
         }
-      } else {
-        step2.innerHTML = '<span class="text-primary mr-3">2.</span>Elija una fecha y una hora';
+      }
+
+      // Step 2 (now 3): Date and time selected
+      if (step2) {
+        if (bookingState.selectedDate && bookingState.selectedTime) {
+          if (!step2.querySelector('.material-icons.text-green-500')) {
+            step2.innerHTML = '<span class="text-primary mr-3">3.</span>Elija una fecha y una hora <span class="material-icons text-green-500 align-middle ml-2">check_circle</span>';
+          }
+        } else {
+          step2.innerHTML = '<span class="text-primary mr-3">3.</span>Elija una fecha y una hora';
+        }
       }
     }
 
@@ -1029,6 +1167,70 @@
     function initializeCalendar() {
       generateCalendar();
       generateTimeSlots();
+    }
+
+    // URL slug to center ID mapping
+    const CENTER_URL_MAPPING = {
+      'barcelona-sants': '3',      // Barcelona Sants
+      'valencia': '1',              // Valencia
+      'madrid-atocha': '8',         // Madrid Atocha
+      'madrid-chamartin': '7',      // Madrid Chamartín
+      'sevilla': '5',               // Sevilla
+      'majadahonda': '10',          // Majadahonda
+      'san-sebastian': '9',         // San Sebastián de los Reyes
+      'torrejon': '6'               // Torrejón de Ardoz
+    };
+
+    /**
+     * Detect center from URL path
+     */
+    function getCenterFromURL() {
+      const path = window.location.pathname;
+      const slug = path.split('/').filter(p => p)[0]; // Get first path segment
+
+      const centerId = CENTER_URL_MAPPING[slug];
+
+      if (centerId) {
+        console.log('📍 Detected center from URL:', slug, '→ Center ID:', centerId);
+      }
+
+      return centerId || null;
+    }
+
+    /**
+     * Auto-select center if URL contains center slug
+     */
+    async function autoSelectCenterFromURL() {
+      const centerId = getCenterFromURL();
+
+      if (centerId) {
+        // Wait for centers to be loaded
+        if (bookingState.smartAgendaCenters.length === 0) {
+          console.log('⏳ Waiting for centers to load before auto-selecting...');
+          return centerId; // Return for later use
+        }
+
+        // Check if this center exists
+        const centerExists = bookingState.smartAgendaCenters.find(c => c.id === centerId);
+
+        if (centerExists) {
+          console.log('✅ Auto-selecting center:', centerExists.name);
+
+          // Set the dropdown value
+          const select = document.getElementById('center-select');
+          select.value = centerId;
+
+          // Trigger the change event to load appointment types
+          select.dispatchEvent(new Event('change'));
+
+          // Scroll to booking section
+          setTimeout(() => {
+            document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+          }, 500);
+        } else {
+          console.warn('⚠️ Center ID from URL not found in Smart Agenda:', centerId);
+        }
+      }
     }
 
     // Initialize everything on load
@@ -1043,6 +1245,9 @@
 
       // Load centers from Smart Agenda API
       await loadCentersFromAPI();
+
+      // Auto-select center from URL if present
+      await autoSelectCenterFromURL();
 
       console.log('Initialization complete!');
     });
