@@ -2116,6 +2116,101 @@ Me costaba creer en el método, pero funciona. Tres semanas sin fumar y me sient
 
       console.log('Initialization complete!');
     });
+
+    // ========== TOUCH-RESPONSIVE CAROUSEL (MOBILE ONLY) ==========
+
+    /**
+     * Add touch controls for review carousels on mobile
+     * Row 1 and Row 2 move in opposite directions at same speed
+     */
+    (function initTouchCarousel() {
+      // Only enable on mobile devices
+      if (window.innerWidth > 768) return;
+
+      const row1 = document.querySelector('.carousel-row-1 .carousel-track');
+      const row2 = document.querySelector('.carousel-row-2 .carousel-track');
+
+      if (!row1 || !row2) return;
+
+      let isDragging = false;
+      let startX = 0;
+      let currentTranslateRow1 = 0;
+      let currentTranslateRow2 = 0;
+      let animationPaused = false;
+
+      // Pause CSS animations and enable manual control
+      function pauseAnimations() {
+        if (!animationPaused) {
+          row1.style.animationPlayState = 'paused';
+          row2.style.animationPlayState = 'paused';
+          animationPaused = true;
+        }
+      }
+
+      // Resume CSS animations
+      function resumeAnimations() {
+        row1.style.animationPlayState = 'running';
+        row2.style.animationPlayState = 'running';
+        animationPaused = false;
+      }
+
+      // Touch start
+      function handleTouchStart(e) {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        pauseAnimations();
+
+        // Get current transform values
+        const row1Style = window.getComputedStyle(row1);
+        const row2Style = window.getComputedStyle(row2);
+        const row1Matrix = new DOMMatrix(row1Style.transform);
+        const row2Matrix = new DOMMatrix(row2Style.transform);
+        currentTranslateRow1 = row1Matrix.m41;
+        currentTranslateRow2 = row2Matrix.m41;
+      }
+
+      // Touch move
+      function handleTouchMove(e) {
+        if (!isDragging) return;
+
+        e.preventDefault();
+        const currentX = e.touches[0].clientX;
+        const deltaX = currentX - startX;
+
+        // Row 1 moves in drag direction
+        // Row 2 moves in opposite direction
+        const newTranslateRow1 = currentTranslateRow1 + deltaX;
+        const newTranslateRow2 = currentTranslateRow2 - deltaX;
+
+        row1.style.transform = `translateX(${newTranslateRow1}px)`;
+        row2.style.transform = `translateX(${newTranslateRow2}px)`;
+      }
+
+      // Touch end
+      function handleTouchEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+
+        // Resume animations after a delay
+        setTimeout(() => {
+          resumeAnimations();
+        }, 500);
+      }
+
+      // Add touch event listeners to carousel containers
+      const row1Container = document.querySelector('.carousel-row-1');
+      const row2Container = document.querySelector('.carousel-row-2');
+
+      row1Container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      row1Container.addEventListener('touchmove', handleTouchMove, { passive: false });
+      row1Container.addEventListener('touchend', handleTouchEnd);
+
+      row2Container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      row2Container.addEventListener('touchmove', handleTouchMove, { passive: false });
+      row2Container.addEventListener('touchend', handleTouchEnd);
+
+      console.log('Touch carousel controls initialized for mobile');
+    })();
   </script>
 
 </body>
