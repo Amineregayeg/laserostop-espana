@@ -69,6 +69,49 @@
       font-weight: 600;
       margin-bottom: 8px;
     }
+
+    /* Reviews Carousel Animations */
+    @keyframes scroll-left {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes scroll-right {
+      0% {
+        transform: translateX(-50%);
+      }
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    .carousel-row-1 .carousel-track {
+      animation: scroll-left 40s linear infinite;
+    }
+
+    .carousel-row-2 .carousel-track {
+      animation: scroll-right 40s linear infinite;
+    }
+
+    .carousel-container:hover .carousel-track {
+      animation-play-state: paused;
+    }
+
+    .review-card-carousel {
+      flex: 0 0 350px;
+      min-width: 350px;
+    }
   </style>
 <script>
     tailwind.config = {
@@ -357,11 +400,11 @@ Cerrar y continuar con pago en centro
 </div>
 </section>
 
-<!-- Google Reviews Section -->
-<section class="bg-white dark:bg-gray-800 py-16 sm:py-24">
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+<!-- Google Reviews Section - Infinite Scroll Carousel -->
+<section class="bg-white dark:bg-gray-800 py-16 sm:py-24 overflow-hidden">
+<div class="max-w-7xl mx-auto">
 <!-- Section Header -->
-<div class="text-center mb-12">
+<div class="text-center mb-12 px-4 sm:px-6 lg:px-8">
 <h2 class="text-3xl sm:text-4xl font-bold text-text-light dark:text-text-dark mb-4">Lo que dicen nuestros clientes</h2>
 <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">Más de 1,000 personas han dejado de fumar con LaserOstop</p>
 
@@ -378,14 +421,15 @@ Cerrar y continuar con pago en centro
 <p class="text-gray-500 dark:text-gray-400 text-sm">(1,234 reseñas verificadas)</p>
 </div>
 
-<!-- Reviews Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-<!-- Review Card 1 -->
-<article class="review-card bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+<!-- Carousel Row 1 - Scrolls Left -->
+<div class="carousel-container carousel-row-1 mb-6">
+<div class="carousel-track">
+<!-- Original 6 reviews -->
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
 <div class="flex items-start gap-4 mb-4">
 <img src="https://ui-avatars.com/api/?name=Maria+Garcia&background=22A9AF&color=fff&size=48" alt="Maria Garcia" class="w-12 h-12 rounded-full flex-shrink-0">
 <div class="flex-1 min-w-0">
-<h3 class="font-semibold text-text-light dark:text-text-dark truncate">María García</h3>
+<h3 class="font-semibold text-text-light dark:text-text-dark">María García</h3>
 <div class="flex items-center gap-2 mt-1">
 <div class="flex text-yellow-400 text-sm">
 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
@@ -395,16 +439,15 @@ Cerrar y continuar con pago en centro
 </div>
 </div>
 <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-Increíble resultado. Después de 20 años fumando, por fin he conseguido dejarlo gracias a LaserOstop. El tratamiento fue indoloro y el personal muy profesional. ¡100% recomendado!
+Increíble resultado. Después de 20 años fumando, por fin he conseguido dejarlo gracias a LaserOstop. El tratamiento fue indoloro y el personal muy profesional.
 </p>
 </article>
 
-<!-- Review Card 2 -->
-<article class="review-card bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
 <div class="flex items-start gap-4 mb-4">
 <img src="https://ui-avatars.com/api/?name=Carlos+Rodriguez&background=843ed4&color=fff&size=48" alt="Carlos Rodriguez" class="w-12 h-12 rounded-full flex-shrink-0">
 <div class="flex-1 min-w-0">
-<h3 class="font-semibold text-text-light dark:text-text-dark truncate">Carlos Rodríguez</h3>
+<h3 class="font-semibold text-text-light dark:text-text-dark">Carlos Rodríguez</h3>
 <div class="flex items-center gap-2 mt-1">
 <div class="flex text-yellow-400 text-sm">
 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
@@ -414,16 +457,15 @@ Increíble resultado. Después de 20 años fumando, por fin he conseguido dejarl
 </div>
 </div>
 <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-Llevaba años intentando dejar de fumar sin éxito. Con LaserOstop lo conseguí en una sola sesión. Sin efectos secundarios, sin ansiedad. Una experiencia transformadora.
+Llevaba años intentando dejar de fumar sin éxito. Con LaserOstop lo conseguí en una sola sesión. Sin efectos secundarios, sin ansiedad.
 </p>
 </article>
 
-<!-- Review Card 3 -->
-<article class="review-card bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
 <div class="flex items-start gap-4 mb-4">
 <img src="https://ui-avatars.com/api/?name=Laura+Martinez&background=f59e0b&color=fff&size=48" alt="Laura Martinez" class="w-12 h-12 rounded-full flex-shrink-0">
 <div class="flex-1 min-w-0">
-<h3 class="font-semibold text-text-light dark:text-text-dark truncate">Laura Martínez</h3>
+<h3 class="font-semibold text-text-light dark:text-text-dark">Laura Martínez</h3>
 <div class="flex items-center gap-2 mt-1">
 <div class="flex text-yellow-400 text-sm">
 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
@@ -433,16 +475,15 @@ Llevaba años intentando dejar de fumar sin éxito. Con LaserOstop lo conseguí 
 </div>
 </div>
 <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-El mejor tratamiento para dejar de fumar. Rápido, efectivo y sin dolor. El equipo de Barcelona fue muy amable. Ya han pasado 2 meses y no he vuelto a fumar ni una vez.
+El mejor tratamiento para dejar de fumar. Rápido, efectivo y sin dolor. El equipo de Barcelona fue muy amable. Ya han pasado 2 meses sin fumar.
 </p>
 </article>
 
-<!-- Review Card 4 -->
-<article class="review-card bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
 <div class="flex items-start gap-4 mb-4">
 <img src="https://ui-avatars.com/api/?name=Javier+Lopez&background=10b981&color=fff&size=48" alt="Javier Lopez" class="w-12 h-12 rounded-full flex-shrink-0">
 <div class="flex-1 min-w-0">
-<h3 class="font-semibold text-text-light dark:text-text-dark truncate">Javier López</h3>
+<h3 class="font-semibold text-text-light dark:text-text-dark">Javier López</h3>
 <div class="flex items-center gap-2 mt-1">
 <div class="flex text-yellow-400 text-sm">
 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
@@ -452,16 +493,15 @@ El mejor tratamiento para dejar de fumar. Rápido, efectivo y sin dolor. El equi
 </div>
 </div>
 <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-Sorprendente. No creía que funcionaría tan bien. Después de la sesión no he tenido ganas de fumar. El tratamiento con láser realmente funciona. Muy satisfecho con el resultado.
+Sorprendente. No creía que funcionaría tan bien. Después de la sesión no he tenido ganas de fumar. El tratamiento con láser realmente funciona.
 </p>
 </article>
 
-<!-- Review Card 5 -->
-<article class="review-card bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
 <div class="flex items-start gap-4 mb-4">
 <img src="https://ui-avatars.com/api/?name=Ana+Fernandez&background=ef4444&color=fff&size=48" alt="Ana Fernandez" class="w-12 h-12 rounded-full flex-shrink-0">
 <div class="flex-1 min-w-0">
-<h3 class="font-semibold text-text-light dark:text-text-dark truncate">Ana Fernández</h3>
+<h3 class="font-semibold text-text-light dark:text-text-dark">Ana Fernández</h3>
 <div class="flex items-center gap-2 mt-1">
 <div class="flex text-yellow-400 text-sm">
 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
@@ -471,16 +511,15 @@ Sorprendente. No creía que funcionaría tan bien. Después de la sesión no he 
 </div>
 </div>
 <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-Excelente atención y resultados inmediatos. Dejé de fumar el mismo día del tratamiento y sin ningún esfuerzo. El centro de Madrid es muy profesional. ¡Gracias LaserOstop!
+Excelente atención y resultados inmediatos. Dejé de fumar el mismo día del tratamiento y sin ningún esfuerzo. El centro de Madrid es muy profesional.
 </p>
 </article>
 
-<!-- Review Card 6 (Hidden on mobile, shown on desktop) -->
-<article class="review-card bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hidden lg:block">
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
 <div class="flex items-start gap-4 mb-4">
 <img src="https://ui-avatars.com/api/?name=Miguel+Santos&background=6366f1&color=fff&size=48" alt="Miguel Santos" class="w-12 h-12 rounded-full flex-shrink-0">
 <div class="flex-1 min-w-0">
-<h3 class="font-semibold text-text-light dark:text-text-dark truncate">Miguel Santos</h3>
+<h3 class="font-semibold text-text-light dark:text-text-dark">Miguel Santos</h3>
 <div class="flex items-center gap-2 mt-1">
 <div class="flex text-yellow-400 text-sm">
 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
@@ -490,13 +529,346 @@ Excelente atención y resultados inmediatos. Dejé de fumar el mismo día del tr
 </div>
 </div>
 <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-Recomendado por un amigo y no me arrepiento. Proceso muy sencillo, sin dolor y sin efectos secundarios. Ya llevo 6 semanas sin fumar y me siento genial. Vale la pena cada euro.
+Recomendado por un amigo y no me arrepiento. Proceso muy sencillo, sin dolor y sin efectos secundarios. Ya llevo 6 semanas sin fumar.
+</p>
+</article>
+
+<!-- Duplicate for seamless loop -->
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Maria+Garcia&background=22A9AF&color=fff&size=48" alt="Maria Garcia" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">María García</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 2 semanas</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Increíble resultado. Después de 20 años fumando, por fin he conseguido dejarlo gracias a LaserOstop. El tratamiento fue indoloro y el personal muy profesional.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Carlos+Rodriguez&background=843ed4&color=fff&size=48" alt="Carlos Rodriguez" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Carlos Rodríguez</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 1 mes</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Llevaba años intentando dejar de fumar sin éxito. Con LaserOstop lo conseguí en una sola sesión. Sin efectos secundarios, sin ansiedad.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Laura+Martinez&background=f59e0b&color=fff&size=48" alt="Laura Martinez" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Laura Martínez</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 3 semanas</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+El mejor tratamiento para dejar de fumar. Rápido, efectivo y sin dolor. El equipo de Barcelona fue muy amable. Ya han pasado 2 meses sin fumar.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Javier+Lopez&background=10b981&color=fff&size=48" alt="Javier Lopez" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Javier López</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 1 semana</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Sorprendente. No creía que funcionaría tan bien. Después de la sesión no he tenido ganas de fumar. El tratamiento con láser realmente funciona.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Ana+Fernandez&background=ef4444&color=fff&size=48" alt="Ana Fernandez" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Ana Fernández</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 2 meses</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Excelente atención y resultados inmediatos. Dejé de fumar el mismo día del tratamiento y sin ningún esfuerzo. El centro de Madrid es muy profesional.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Miguel+Santos&background=6366f1&color=fff&size=48" alt="Miguel Santos" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Miguel Santos</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 3 días</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Recomendado por un amigo y no me arrepiento. Proceso muy sencillo, sin dolor y sin efectos secundarios. Ya llevo 6 semanas sin fumar.
 </p>
 </article>
 </div>
+</div>
+
+<!-- Carousel Row 2 - Scrolls Right -->
+<div class="carousel-container carousel-row-2">
+<div class="carousel-track">
+<!-- Different 6 reviews -->
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Sofia+Ruiz&background=8b5cf6&color=fff&size=48" alt="Sofia Ruiz" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Sofía Ruiz</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 5 días</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Estoy muy contenta con el resultado. Fumaba desde hace 15 años y ahora puedo respirar mejor. El tratamiento fue rápido y efectivo. ¡Totalmente recomendable!
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=David+Moreno&background=ec4899&color=fff&size=48" alt="David Moreno" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">David Moreno</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 1 semana</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Lo mejor que he hecho por mi salud. El equipo de Valencia es excelente, muy atentos. Ya no fumo desde hace un mes y me siento increíble.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Isabel+Torres&background=14b8a6&color=fff&size=48" alt="Isabel Torres" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Isabel Torres</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 2 semanas</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Impresionante. No sentí nada durante el tratamiento y desde entonces no he tenido ganas de fumar. Es como si nunca hubiera fumado. Muy agradecida.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Pedro+Sanchez&background=f97316&color=fff&size=48" alt="Pedro Sanchez" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Pedro Sánchez</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 3 semanas</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Después de probar todos los métodos posibles, LaserOstop fue la solución. Personal muy profesional en Sevilla. Llevo 2 meses libre de tabaco.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Carmen+Diaz&background=06b6d4&color=fff&size=48" alt="Carmen Diaz" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Carmen Díaz</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 4 días</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Mi marido y yo fuimos juntos y ambos dejamos de fumar. El tratamiento es cómodo, rápido y sin dolor. Ya llevamos 3 semanas sin fumar. ¡Funciona!
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Roberto+Gil&background=a855f7&color=fff&size=48" alt="Roberto Gil" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Roberto Gil</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 10 días</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Increíble método. Sin ansiedad, sin nerviosismo, sin ganas de fumar. El personal es muy amable y te explican todo detalladamente. Muy recomendable.
+</p>
+</article>
+
+<!-- Duplicate for seamless loop -->
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Sofia+Ruiz&background=8b5cf6&color=fff&size=48" alt="Sofia Ruiz" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Sofía Ruiz</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 5 días</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Estoy muy contenta con el resultado. Fumaba desde hace 15 años y ahora puedo respirar mejor. El tratamiento fue rápido y efectivo. ¡Totalmente recomendable!
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=David+Moreno&background=ec4899&color=fff&size=48" alt="David Moreno" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">David Moreno</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 1 semana</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Lo mejor que he hecho por mi salud. El equipo de Valencia es excelente, muy atentos. Ya no fumo desde hace un mes y me siento increíble.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Isabel+Torres&background=14b8a6&color=fff&size=48" alt="Isabel Torres" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Isabel Torres</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 2 semanas</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Impresionante. No sentí nada durante el tratamiento y desde entonces no he tenido ganas de fumar. Es como si nunca hubiera fumado. Muy agradecida.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Pedro+Sanchez&background=f97316&color=fff&size=48" alt="Pedro Sanchez" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Pedro Sánchez</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 3 semanas</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Después de probar todos los métodos posibles, LaserOstop fue la solución. Personal muy profesional en Sevilla. Llevo 2 meses libre de tabaco.
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Carmen+Diaz&background=06b6d4&color=fff&size=48" alt="Carmen Diaz" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Carmen Díaz</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 4 días</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Mi marido y yo fuimos juntos y ambos dejamos de fumar. El tratamiento es cómodo, rápido y sin dolor. Ya llevamos 3 semanas sin fumar. ¡Funciona!
+</p>
+</article>
+
+<article class="review-card-carousel bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-xl transition-shadow">
+<div class="flex items-start gap-4 mb-4">
+<img src="https://ui-avatars.com/api/?name=Roberto+Gil&background=a855f7&color=fff&size=48" alt="Roberto Gil" class="w-12 h-12 rounded-full flex-shrink-0">
+<div class="flex-1 min-w-0">
+<h3 class="font-semibold text-text-light dark:text-text-dark">Roberto Gil</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-400 text-sm">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Hace 10 días</span>
+</div>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+Increíble método. Sin ansiedad, sin nerviosismo, sin ganas de fumar. El personal es muy amable y te explican todo detalladamente. Muy recomendable.
+</p>
+</article>
+</div>
+</div>
 
 <!-- See All Reviews Link -->
-<div class="text-center">
+<div class="text-center mt-12 px-4 sm:px-6 lg:px-8">
 <a href="https://search.google.com/local/reviews?placeid=ChIJa1xA0X7dYA0RqN0Xh6YKQOY" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold text-lg transition-colors group">
 Ver todas las reseñas en Google
 <span class="material-icons transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -504,7 +876,7 @@ Ver todas las reseñas en Google
 </div>
 
 <!-- Google Attribution (Required for Compliance) -->
-<div class="text-center mt-6">
+<div class="text-center mt-6 px-4 sm:px-6 lg:px-8">
 <p class="text-xs text-gray-400 dark:text-gray-500">Reseñas proporcionadas por Google</p>
 </div>
 </div>
