@@ -182,11 +182,8 @@ app.get('/api/appointment-types', async (req, res) => {
 
     const types = await smartAgendaRequest('/pdo_type_rdv');
 
-    // Filter by center and only bookable/visible types
-    let filteredTypes = types.filter(type =>
-      type.afficher_site === 'O' &&
-      type.reservable === 'O'
-    );
+    // Filter by center only (no longer filtering by afficher_site or reservable flags)
+    let filteredTypes = types;
 
     // If centerId provided, filter by center
     if (centerId) {
@@ -203,7 +200,10 @@ app.get('/api/appointment-types', async (req, res) => {
       description: type.description,
       instructions: type.perso1,
       stripeLink: type.perso2,
-      bookingLink: type.link_rdv
+      bookingLink: type.link_rdv,
+      // Include flags for debugging/frontend filtering
+      afficherSite: type.afficher_site,
+      reservable: type.reservable
     }));
 
     res.json(formattedTypes);
@@ -304,13 +304,13 @@ app.post('/api/booking', async (req, res) => {
     // Step 4: Create appointment
     console.log('📅 Creating appointment...');
     const appointmentData = {
-      client_id: client.id,   // API uses client_id not id_client
-      id_type_rdv: typeId,
-      presta_id: resourceId,  // API uses presta_id not id_ressource
-      start_date: startTime,  // API uses start_date not date_debut
-      end_date: endTime,      // API uses end_date not date_fin
-      equipe_id: centerId,    // API uses equipe_id not id_groupe
-      statut: 'C' // Confirmed
+      client_id: client.id,     // Client ID
+      presta_id: typeId,        // IMPORTANT: presta_id = appointment TYPE (prestation/service), not practitioner!
+      ressource_id: resourceId, // Resource/practitioner ID
+      start_date: startTime,    // Start date/time
+      end_date: endTime,        // End date/time
+      equipe_id: centerId,      // Team/center ID
+      statut: 'C'               // Status: C = Confirmed
     };
     console.log('Appointment data:', appointmentData);
 
