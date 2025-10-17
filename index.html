@@ -2123,94 +2123,93 @@ Me costaba creer en el método, pero funciona. Tres semanas sin fumar y me sient
      * Add touch controls for review carousels on mobile
      * Row 1 and Row 2 move in opposite directions at same speed
      */
-    (function initTouchCarousel() {
-      // Only enable on mobile devices
-      if (window.innerWidth > 768) return;
-
-      const row1 = document.querySelector('.carousel-row-1 .carousel-track');
-      const row2 = document.querySelector('.carousel-row-2 .carousel-track');
-
-      if (!row1 || !row2) return;
-
-      let isDragging = false;
-      let startX = 0;
-      let currentTranslateRow1 = 0;
-      let currentTranslateRow2 = 0;
-      let animationPaused = false;
-
-      // Pause CSS animations and enable manual control
-      function pauseAnimations() {
-        if (!animationPaused) {
-          row1.style.animationPlayState = 'paused';
-          row2.style.animationPlayState = 'paused';
-          animationPaused = true;
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+      // Only enable on touch devices (mobile/tablet)
+      if (!('ontouchstart' in window)) {
+        console.log('Touch carousel disabled - not a touch device');
+        return;
       }
 
-      // Resume CSS animations
-      function resumeAnimations() {
-        row1.style.animationPlayState = 'running';
-        row2.style.animationPlayState = 'running';
-        animationPaused = false;
-      }
-
-      // Touch start
-      function handleTouchStart(e) {
-        isDragging = true;
-        startX = e.touches[0].clientX;
-        pauseAnimations();
-
-        // Get current transform values
-        const row1Style = window.getComputedStyle(row1);
-        const row2Style = window.getComputedStyle(row2);
-        const row1Matrix = new DOMMatrix(row1Style.transform);
-        const row2Matrix = new DOMMatrix(row2Style.transform);
-        currentTranslateRow1 = row1Matrix.m41;
-        currentTranslateRow2 = row2Matrix.m41;
-      }
-
-      // Touch move
-      function handleTouchMove(e) {
-        if (!isDragging) return;
-
-        e.preventDefault();
-        const currentX = e.touches[0].clientX;
-        const deltaX = currentX - startX;
-
-        // Row 1 moves in drag direction
-        // Row 2 moves in opposite direction
-        const newTranslateRow1 = currentTranslateRow1 + deltaX;
-        const newTranslateRow2 = currentTranslateRow2 - deltaX;
-
-        row1.style.transform = `translateX(${newTranslateRow1}px)`;
-        row2.style.transform = `translateX(${newTranslateRow2}px)`;
-      }
-
-      // Touch end
-      function handleTouchEnd() {
-        if (!isDragging) return;
-        isDragging = false;
-
-        // Resume animations after a delay
-        setTimeout(() => {
-          resumeAnimations();
-        }, 500);
-      }
-
-      // Add touch event listeners to carousel containers
+      const row1Track = document.querySelector('.carousel-row-1 .carousel-track');
+      const row2Track = document.querySelector('.carousel-row-2 .carousel-track');
       const row1Container = document.querySelector('.carousel-row-1');
       const row2Container = document.querySelector('.carousel-row-2');
 
-      row1Container.addEventListener('touchstart', handleTouchStart, { passive: true });
-      row1Container.addEventListener('touchmove', handleTouchMove, { passive: false });
-      row1Container.addEventListener('touchend', handleTouchEnd);
+      if (!row1Track || !row2Track || !row1Container || !row2Container) {
+        console.log('Touch carousel disabled - elements not found');
+        return;
+      }
 
-      row2Container.addEventListener('touchstart', handleTouchStart, { passive: true });
-      row2Container.addEventListener('touchmove', handleTouchMove, { passive: false });
-      row2Container.addEventListener('touchend', handleTouchEnd);
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let row1StartTranslate = 0;
+      let row2StartTranslate = 0;
+      let isTouching = false;
 
-      console.log('Touch carousel controls initialized for mobile');
-    })();
+      function getTranslateX(element) {
+        const style = window.getComputedStyle(element);
+        const matrix = new DOMMatrixReadOnly(style.transform);
+        return matrix.m41;
+      }
+
+      function handleTouchStart(e) {
+        isTouching = true;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+
+        // Pause animations
+        row1Track.style.animationPlayState = 'paused';
+        row2Track.style.animationPlayState = 'paused';
+
+        // Get current positions
+        row1StartTranslate = getTranslateX(row1Track);
+        row2StartTranslate = getTranslateX(row2Track);
+
+        console.log('Touch start at', touchStartX);
+      }
+
+      function handleTouchMove(e) {
+        if (!isTouching) return;
+
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        const deltaX = touchX - touchStartX;
+        const deltaY = touchY - touchStartY;
+
+        // Only handle horizontal swipes (prevent vertical scroll interference)
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          e.preventDefault();
+
+          // Row 1 moves with finger
+          // Row 2 moves opposite direction
+          row1Track.style.transform = `translateX(${row1StartTranslate + deltaX}px)`;
+          row2Track.style.transform = `translateX(${row2StartTranslate - deltaX}px)`;
+        }
+      }
+
+      function handleTouchEnd() {
+        if (!isTouching) return;
+        isTouching = false;
+
+        console.log('Touch end');
+
+        // Resume animations after brief delay
+        setTimeout(() => {
+          row1Track.style.animationPlayState = 'running';
+          row2Track.style.animationPlayState = 'running';
+        }, 300);
+      }
+
+      // Add event listeners to both carousel containers
+      [row1Container, row2Container].forEach(container => {
+        container.addEventListener('touchstart', handleTouchStart, { passive: true });
+        container.addEventListener('touchmove', handleTouchMove, { passive: false });
+        container.addEventListener('touchend', handleTouchEnd, { passive: true });
+        container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+      });
+
+      console.log('✅ Touch carousel controls initialized');
+    });
   </script>
 
 </body>
