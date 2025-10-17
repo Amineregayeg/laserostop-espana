@@ -1171,6 +1171,12 @@ Ver todas las reseñas en Google
         return;
       }
 
+      // Prevent payment popup for free Rechute sessions
+      if (selectedType.price === 0 || bookingState.isRechuteSession) {
+        console.log('Rechute session - no payment required, skipping popup');
+        return;
+      }
+
       // Calculate prices based on appointment type
       let centerPrice, onlinePrice, monthlyPrice, monthlyTotal;
 
@@ -1737,10 +1743,10 @@ Ver todas las reseñas en Google
       select.innerHTML = '<option value="">Seleccione el tipo de sesión...</option>';
 
       if (types && types.length > 0) {
-        // Filter: Only show "pay at center" types (deposit = 0 or price = deposit means full prepay)
-        // Show types where deposit is 0 (pay at center)
+        // Filter: Only show "pay at center" types (deposit = 0)
+        // Include all types where deposit is 0, including Rechute (price = 0)
         const centerPaymentTypes = types.filter(type =>
-          type.deposit === 0 && type.price > 0
+          type.deposit === 0 && type.price >= 0
         );
 
         if (centerPaymentTypes.length === 0) {
@@ -1791,6 +1797,39 @@ Ver todas las reseñas en Google
         document.getElementById('type-duration').textContent = `${duration} minutos`;
         document.getElementById('type-price').textContent = `€${price}`;
         document.getElementById('type-description').textContent = description;
+
+        // Check if this is a Rechute (free) session
+        const typeName = selectedOption.textContent.toLowerCase();
+        const isRechute = price === '0' || typeName.includes('rechute') || typeName.includes('recaída');
+
+        // Remove any existing disclaimer
+        const existingDisclaimer = infoBox.querySelector('.rechute-disclaimer');
+        if (existingDisclaimer) {
+          existingDisclaimer.remove();
+        }
+
+        // Add Rechute disclaimer if applicable
+        if (isRechute) {
+          const disclaimer = document.createElement('div');
+          disclaimer.className = 'rechute-disclaimer mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 rounded';
+          disclaimer.innerHTML = `
+            <div class="flex items-start gap-3">
+              <span class="material-icons text-yellow-600 text-xl">warning</span>
+              <div>
+                <p class="font-semibold text-yellow-800 dark:text-yellow-200">⚠️ Sesión de Recaída</p>
+                <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                  Su elegibilidad será verificada para confirmar que ya completó una sesión previa con LaserOstop.
+                </p>
+              </div>
+            </div>
+          `;
+          infoBox.appendChild(disclaimer);
+
+          // Store flag to prevent payment popup later
+          bookingState.isRechuteSession = true;
+        } else {
+          bookingState.isRechuteSession = false;
+        }
 
         infoBox.classList.remove('hidden');
 
