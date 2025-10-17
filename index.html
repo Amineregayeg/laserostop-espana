@@ -1143,8 +1143,8 @@ Ver todas las reseñas en Google
       }
 
       // Prevent payment popup for free Rechute sessions
-      if (selectedType.price === 0 || bookingState.isRechuteSession) {
-        console.log('Rechute session - no payment required, skipping popup');
+      if (selectedType.kind === 'rechute' || selectedType.price === 0) {
+        console.log('Rechute session (€0) - no payment required, skipping popup');
         return;
       }
 
@@ -1516,6 +1516,13 @@ Ver todas las reseñas en Google
      * Load availability for selected date range
      */
     async function loadAvailability(startDate, endDate) {
+      // DISABLED: Smart Agenda API doesn't support /getAvailabilities endpoint (returns HTTP 400)
+      // For now, we allow users to manually select any date/time
+      // Real availability checking would need to be done through Smart Agenda dashboard
+      console.log('Availability loading disabled (Smart Agenda API limitation)');
+      return {};
+
+      /* COMMENTED OUT - API not available
       if (!bookingState.selectedCenter || !bookingState.selectedAppointmentType) {
         console.log('Center or appointment type not selected');
         return {};
@@ -1524,8 +1531,6 @@ Ver todas las reseñas en Google
       try {
         console.log('Loading availability from', startDate, 'to', endDate);
 
-        // Don't send typeId - Smart Agenda API doesn't recognize new appointment type IDs
-        // This is part of the same sync issue affecting /pdo_type_rdv
         const params = new URLSearchParams({
           centerId: bookingState.selectedCenter,
           startDate: formatDateForAPI(startDate),
@@ -1541,7 +1546,6 @@ Ver todas las reseñas en Google
         const availability = await response.json();
         console.log('Availability data:', availability);
 
-        // Process availability data into our format
         bookingState.availableSlots = processAvailabilityData(availability);
 
         return bookingState.availableSlots;
@@ -1549,6 +1553,7 @@ Ver todas las reseñas en Google
         console.error('Error loading availability:', error);
         return {};
       }
+      */
     }
 
     /**
@@ -1905,7 +1910,7 @@ Ver todas las reseñas en Google
           const option = document.createElement('option');
           option.value = type.id;
           option.textContent = type.name;
-          option.dataset.price = type.price || '190';
+          option.dataset.price = type.price !== undefined ? type.price : '190';  // Handle 0 correctly
           option.dataset.duration = type.duration || '30';
 
           // Strip HTML from description
